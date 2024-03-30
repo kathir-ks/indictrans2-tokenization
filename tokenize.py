@@ -3,6 +3,9 @@ from datasets import load_dataset
 import argparse
 from IndicTransTokenizer import IndicProcessor, IndicTransTokenizer
 import time
+import nltk
+nltk.download('punkt')
+
 
 def split_into_sentences(text):
 
