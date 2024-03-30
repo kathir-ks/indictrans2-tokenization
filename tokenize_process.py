@@ -94,14 +94,15 @@ parser.add_argument("--direction", default="en-indic", type=str, help="Translati
 parser.add_argument("--shard", default=1, type=int, help="Subset Sharding Number.")
 parser.add_argument("--batch_size", default=64, type=int, help="Batch size of tokenization.")
 
-ṣubset = args.subset
+args = parser.parse_args()
+# Parse arguments
+
+subset = args.subset
 src_lang = args.src_lang
 tgt_lang = args.tgt_lang
 direction = args.direction
 shard = args.shard
 
-# Parse arguments
-args = parser.parse_args()
 
 dataset = load_dataset("HuggingFaceTB/cosmopedia", subset)
 
