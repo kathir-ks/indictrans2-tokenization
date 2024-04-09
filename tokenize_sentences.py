@@ -3,6 +3,7 @@ from datasets import load_dataset
 import argparse
 from IndicTransTokenizer import IndicProcessor, IndicTransTokenizer
 import time
+from concurrent.futures import ThreadPoolExecutor
 import nltk
 nltk.download('punkt')
 
@@ -11,7 +12,8 @@ def write_json(data, filename):
     with open(filename, 'w') as f:
         json.dump(data, f)
 
-def split_into_sentences(text):
+
+def split_into_sentences(index, text):
 
   # Define punctuation marks to split on
   punctuation = ".?!;:"
@@ -38,9 +40,10 @@ def split_into_sentences(text):
         sentences.extend([curr_sentence])
         curr_sentence = ""
 
-  return sentences
+  return [[index] * len(sentences), sentences]
 
-def tokenize_sentences(sentences, tokenizer, ip, src_lang, tgt_lang):
+
+def tokenize_sentences(sentences,indices, tokenizer, ip, src_lang, tgt_lang):
 
     batch = ip.preprocess_batch(sentences, src_lang=src_lang, tgt_lang=tgt_lang)
 
@@ -55,7 +58,7 @@ def tokenize_sentences(sentences, tokenizer, ip, src_lang, tgt_lang):
 
     inputs = {key: value.tolist() for key, value in inputs.items()}
 
-    return inputs
+    return {"indices": indices, "tokenized_input": inputs}
 
 data_files = {
    "auto_math_text":{"data/auto_math_text/train-000**-of-00018.parquet"},
@@ -89,76 +92,41 @@ data_files = {
   "web_samples_v2_shard_10":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-000118.parquet" for i in range(108, 118)}
 }
 
-
-parser = argparse.ArgumentParser(description="Tokenization script for splitting sentences and tokenizing.")
-parser.add_argument("--subset", default="auto_math_text", type=str, help="Subset to process.")
-parser.add_argument("--src_lang", default="eng_Latn", type=str, help="Source language.")
-parser.add_argument("--tgt_lang", default="tam_Taml", type=str, help="Target language.")
-parser.add_argument("--direction", default="en-indic", type=str, help="Translation direction.")
-# parser.add_argument("--shard", default=1, type=int, help="Subset Sharding Number.")
-parser.add_argument("--batch_size", default=64, type=int, help="Batch size of tokenization.")
-
-args = parser.parse_args()
-# Parse arguments
-
-subset = args.subset
-src_lang = args.src_lang
-tgt_lang = args.tgt_lang
-direction = args.direction
-# shard = args.shard
-
-
-dataset = load_dataset("HuggingFaceTB/cosmopedia", subset)
+direction = "en-indic"
 
 ip = IndicProcessor(inference=True)
 tokenizer = IndicTransTokenizer(direction=direction)
 
-# Split and tokenize sentences, then write tokenized data to JSON files
-MAX_SENTENCES_PER_FILE = 250000
-file_counter = 1
-batch_size = args.batch_size
-sentences = []
+dataset = load_dataset("HuggingFaceTB/cosmopedia", data_files=data_files[subset])
+dataset = dataset['train']
+dataset = dataset['text']
+
+results = []
+
+with ThreadPoolExecutor(max_workers=96) as executor:
+       results.extend(executor.map(split_into_sentences, range(len(dataset)), dataset))
+
 indices = []
-output_data = []
+sentences = []
 
-t = time.time()
+for result in results:   
+    assert len(result[0])==len(result[1])
+    indices.extend(result[0])
+    sentences.extend(result[1])
 
-for i, data_entry in enumerate(dataset['train']):
-    index = i
-    text = data_entry['text']
-    sent = split_into_sentences(text)
-    sentences.extend(sent)
-    ind = [index] * len(sent)
-    indices.extend(ind)
+assert len(indices)==len(sentences)
 
-    if len(sentences) >= MAX_SENTENCES_PER_FILE:
-        output_data = []
-        for j in range(0, len(sentences), batch_size):
-            batch_sentences = sentences[j : j + batch_size]
-            batch_indices = indices[j : j + batch_size]
-            tokenized_inputs = tokenize_sentences(batch_sentences, tokenizer, ip, src_lang, tgt_lang)
-            output_data.append({"indices": batch_indices, "tokenized_input": tokenized_inputs})
+data = []
 
-        filename = f'{subset}_shard_{shard}_output_{file_counter}.json'
-        write_json(output_data, filename)
-        sentences = []
-        indices = []
-        file_counter += 1
-        print(time.time() - t)
-        t = time.time()
+with ThreadPoolExecutor(max_workers=96) as executor:
+         data.extend(executor.map(tokenize_sentences, (sentences[i : i + tonkenization_batch_size] for i in range(0, len(sentences), tonkenization_batch_size)),
+                                  (indices[i : i + tonkenization_batch_size] for i in range(0, len(indices), tonkenization_batch_size)),
+                                   tokenizer, ip, src_lang, tgt_lang))
 
-# Write remaining tokenized data to a JSON file
-if sentences and indices:
-        output_data = []
-        for j in range(0, len(sentences), batch_size):
-            batch_sentences = sentences[j : j + batch_size]
-            batch_indices = indices[j : j + batch_size]
-
-            tokenized_inputs = tokenize_sentences(batch_sentences, tokenizer, ip, src_lang, tgt_lang)
-            output_data.append({"indices": batch_indices, "tokenized_input": tokenized_inputs})
-
-        filename = f'{subset}_output_{file_counter}.json'
-        write_json(output_data, filename)
-        sentences = []
-        indices = []
-        file_counter += 1
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Tokenize sentences')
+    parser.add_argument("--subset", default=None, type=str, required=True, help=f"{data_files.keys()}")
+    parser.add_argument("--src_lang", default="eng_Latn", type=str, required=False)
+    parser.add_argument("--tgt_lang", default=None, type=str, required=True)
+    parser.add_argument("--direction", default="en-indic", type=str, required=False)
+    parser.add_argument("--tokenization_batch_size", default=64, type=int, required=False)
