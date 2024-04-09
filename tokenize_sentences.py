@@ -142,5 +142,8 @@ if __name__ == '__main__':
                                     (indices[i : i + tonkenization_batch_size] for i in range(0, len(indices), tonkenization_batch_size)),
                                     tokenizer, ip, src_lang, tgt_lang))    
 
+    file_name = f"{subset}.json"
+    write_json(data, file_name)
+    
 
 
