@@ -10,12 +10,12 @@ nltk.download('punkt')
 
 
 data_files = {
-   "auto_math_text":tuple("data/auto_math_text/train-000**-of-00018.parquet"),
+   "auto_math_text":{"data/auto_math_text/train-0000*-of-00018.parquet"},
    "combined":{"data/openstax/train-0000*-of-00002.parquet",
                "data/khanacademy/train-00000-of-00001.parquet", 
                "data/wikihow/train-0000*-of-00002.parquet"
                },
-  "stanford":{"data/stanford/train-000**-of-00013.parquet"},
+  "stanford":{"data/stanford/train-0000*-of-00013.parquet"},
   "stories_shard_1":{f"data/stories/train-{str(i).zfill(5)}-of-00043.parquet" for i in range(0, 14)},
   "stories_shard_2":{f"data/stories/train-{str(i).zfill(5)}-of-00043.parquet" for i in range(14, 28)},
   "stories_shard_3":{f"data/stories/train-{str(i).zfill(5)}-of-00043.parquet" for i in range(28, 43)},
