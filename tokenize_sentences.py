@@ -4,6 +4,7 @@ import argparse
 from IndicTransTokenizer import IndicProcessor, IndicTransTokenizer
 import time
 from concurrent.futures import ThreadPoolExecutor
+from itertools import repeat
 import nltk
 nltk.download('punkt')
 
@@ -140,7 +141,7 @@ if __name__ == '__main__':
     with ThreadPoolExecutor(max_workers=96) as executor:
             data.extend(executor.map(tokenize_sentences, (sentences[i : i + tonkenization_batch_size] for i in range(0, len(sentences), tonkenization_batch_size)),
                                     (indices[i : i + tonkenization_batch_size] for i in range(0, len(indices), tonkenization_batch_size)),
-                                    tokenizer, ip, src_lang, tgt_lang))    
+                                    repeat(tokenizer), repeat(ip), repeat(src_lang), repeat(tgt_lang)))    
 
     file_name = f"{subset}.json"
     write_json(data, file_name)
