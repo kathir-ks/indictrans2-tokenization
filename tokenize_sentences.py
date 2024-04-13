@@ -10,7 +10,7 @@ nltk.download('punkt')
 
 
 data_files = {
-   "auto_math_text":{"data/auto_math_text/train-000**-of-00018.parquet"},
+   "auto_math_text":tuple("data/auto_math_text/train-000**-of-00018.parquet"),
    "combined":{"data/openstax/train-0000*-of-00002.parquet",
                "data/khanacademy/train-00000-of-00001.parquet", 
                "data/wikihow/train-0000*-of-00002.parquet"
