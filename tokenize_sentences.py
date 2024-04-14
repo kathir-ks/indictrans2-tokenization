@@ -134,9 +134,14 @@ if __name__ == '__main__':
 
     results = []
 
-    with ProcessPoolExecutor(max_workers=max_workers) as executor:
-           results.extend(executor.map(split_into_sentences, range(len(dataset)), dataset))
+    # with Proces/sPoolExecutor(max_workers=max_workers) as executor:
+          #  results.extend(executor.map(split_into_sentences, range(len(dataset)), dataset))
 
+    for i, row in enumerate(dataset):
+        result = split_into_sentences(i, row)
+        results.append(result)
+
+      
     indices = []
     sentences = []
 
