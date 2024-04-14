@@ -1,14 +1,9 @@
-'''
-single process execution
-'''
-
-
 import json
 from datasets import load_dataset
 import argparse
 from IndicTransTokenizer import IndicProcessor, IndicTransTokenizer
 import time
-# from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 from itertools import repeat
 import nltk
 nltk.download('punkt')
@@ -110,7 +105,7 @@ if __name__ == '__main__':
     parser.add_argument("--tgt_lang", default=None, type=str, required=True)
     parser.add_argument("--direction", default="en-indic", type=str, required=False)
     parser.add_argument("--tokenization_batch_size", default=64, type=int, required=True)
-    # parser.add_argument("--max_workers", default=96, type=int, required=True)
+    parser.add_argument("--max_workers", default=96, type=int, required=True)
 
 
     args = parser.parse_args()
@@ -120,7 +115,7 @@ if __name__ == '__main__':
     tgt_lang = args.tgt_lang
     direction = args.direction
     tonkenization_batch_size = args.tokenization_batch_size
-    # max_workers = args.max_workers
+    max_workers = args.max_workers
 
     assert subset in data_files.keys()
     assert tgt_lang is not None
@@ -147,17 +142,12 @@ if __name__ == '__main__':
 
     assert len(indices)==len(sentences)
 
-    # with ProcessPoolExecutor(max_workers=max_workers) as executor:
-            # data.extend(executor.map(tokenize_sentences, (sentences[i : i + tonkenization_batch_size] for i in range(0, len(sentences), tonkenization_batch_size)),
-            #                         (indices[i : i + tonkenization_batch_size] for i in range(0, len(indices), tonkenization_batch_size)),
-            #                         repeat(tokenizer), repeat(ip), repeat(src_lang), repeat(tgt_lang)))    
     data = []
 
-    for i in range(0, len(sentences), tonkenization_batch_size):
-      batch_sentences = sentences[i : i + tonkenization_batch_size]
-      batch_indices = indices[i : i + tonkenization_batch_size]
-      result = tokenize_sentences(batch_sentences, batch_indices, tokenizer, ip, src_lang, tgt_lang)
-      data.append(result)
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+            data.extend(executor.map(tokenize_sentences, (sentences[i : i + tonkenization_batch_size] for i in range(0, len(sentences), tonkenization_batch_size)),
+                                    (indices[i : i + tonkenization_batch_size] for i in range(0, len(indices), tonkenization_batch_size)),
+                                    repeat(tokenizer), repeat(ip), repeat(src_lang), repeat(tgt_lang)))    
 
     file_name = f"{subset}.json"
     write_json(data, file_name)
