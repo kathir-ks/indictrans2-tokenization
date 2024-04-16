@@ -40,9 +40,11 @@ data_files = {
   "web_samples_v2_shard_9":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-000118.parquet" for i in range(96, 108)},
   "web_samples_v2_shard_10":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-000118.parquet" for i in range(108, 118)}
 }
+
 def write_json(data, filename):
     with open(filename, 'w') as f:
         json.dump(data, f)
+
 def split_into_sentences(index, text):
   # Define punctuation marks to split on
   punctuation = ".?!;:"
@@ -66,6 +68,7 @@ def split_into_sentences(index, text):
         sentences.extend([curr_sentence])
         curr_sentence = ""
   return [[index] * len(sentences), sentences]
+
 def tokenize_sentences(sentences,indices, tokenizer, ip, src_lang, tgt_lang):
     batch = ip.preprocess_batch(sentences, src_lang=src_lang, tgt_lang=tgt_lang)
     inputs = tokenizer(
