@@ -8,7 +8,7 @@ from datasets import load_dataset
 import argparse
 from IndicTransTokenizer import IndicProcessor, IndicTransTokenizer
 import time
-# from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 from itertools import repeat
 import nltk
 nltk.download('punkt')
@@ -110,7 +110,7 @@ if __name__ == '__main__':
     parser.add_argument("--tgt_lang", default=None, type=str, required=True)
     parser.add_argument("--direction", default="en-indic", type=str, required=False)
     parser.add_argument("--tokenization_batch_size", default=64, type=int, required=True)
-    # parser.add_argument("--max_workers", default=96, type=int, required=True)
+    parser.add_argument("--max_workers", default=96, type=int, required=True)
 
 
     args = parser.parse_args()
@@ -119,8 +119,8 @@ if __name__ == '__main__':
     src_lang = args.src_lang
     tgt_lang = args.tgt_lang
     direction = args.direction
-    tonkenization_batch_size = args.tokenization_batch_size
-    # max_workers = args.max_workers
+    tokenization_batch_size = args.tokenization_batch_size
+    max_workers = args.max_workers
 
     assert subset in data_files.keys()
     assert tgt_lang is not None
@@ -134,17 +134,18 @@ if __name__ == '__main__':
 
     results = []
 
-    # with Proces/sPoolExecutor(max_workers=max_workers) as executor:
-          #  results.extend(executor.map(split_into_sentences, range(len(dataset)), dataset))
+    if max_workers > 1:
+      with ProcessPoolExecutor(max_workers=max_workers) as executor:
+             results.extend(executor.map(split_into_sentences, range(len(dataset)), dataset))
 
-    for i, row in enumerate(dataset):
-        result = split_into_sentences(i, row)
-        results.append(result)
-
+    else:
+      for i, row in enumerate(dataset):
+          result = split_into_sentences(i, row)
+          results.append(result)
       
     indices = []
     sentences = []
-
+    
     for result in results:   
         assert len(result[0])==len(result[1])
         indices.extend(result[0])
@@ -152,17 +153,20 @@ if __name__ == '__main__':
 
     assert len(indices)==len(sentences)
 
-    # with ProcessPoolExecutor(max_workers=max_workers) as executor:
-            # data.extend(executor.map(tokenize_sentences, (sentences[i : i + tonkenization_batch_size] for i in range(0, len(sentences), tonkenization_batch_size)),
-            #                         (indices[i : i + tonkenization_batch_size] for i in range(0, len(indices), tonkenization_batch_size)),
-            #                         repeat(tokenizer), repeat(ip), repeat(src_lang), repeat(tgt_lang)))    
     data = []
 
-    for i in range(0, len(sentences), tonkenization_batch_size):
-      batch_sentences = sentences[i : i + tonkenization_batch_size]
-      batch_indices = indices[i : i + tonkenization_batch_size]
-      result = tokenize_sentences(batch_sentences, batch_indices, tokenizer, ip, src_lang, tgt_lang)
-      data.append(result)
+    if max_workers > 1:
+      with ProcessPoolExecutor(max_workers=max_workers) as executor:
+              data.extend(executor.map(tokenize_sentences, (sentences[i : i + tokenization_batch_size] for i in range(0, len(sentences), tokenization_batch_size)),
+                                      (indices[i : i + tokenization_batch_size] for i in range(0, len(indices), tokenization_batch_size)),
+                                      repeat(tokenizer), repeat(ip), repeat(src_lang), repeat(tgt_lang)))
+                
+    else:
+      for i in range(0, len(sentences), tokenization_batch_size):
+        batch_sentences = sentences[i : i + tokenization_batch_size]
+        batch_indices = indices[i : i + tokenization_batch_size]
+        result = tokenize_sentences(batch_sentences, batch_indices, tokenizer, ip, src_lang, tgt_lang)
+        data.append(result)
 
     file_name = f"{subset}.json"
     write_json(data, file_name)

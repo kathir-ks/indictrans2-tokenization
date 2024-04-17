@@ -100,7 +100,7 @@ if __name__ == '__main__':
     src_lang = args.src_lang
     tgt_lang = args.tgt_lang
     direction = args.direction
-    tonkenization_batch_size = args.tokenization_batch_size
+    tokenization_batch_size = args.tokenization_batch_size
     max_workers = args.max_workers
 
     assert subset in data_files.keys()
@@ -127,8 +127,8 @@ if __name__ == '__main__':
     data = []
 
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
-            data.extend(executor.map(tokenize_sentences, (sentences[i : i + tonkenization_batch_size] for i in range(0, len(sentences), tonkenization_batch_size)),
-                                    (indices[i : i + tonkenization_batch_size] for i in range(0, len(indices), tonkenization_batch_size)),
+            data.extend(executor.map(tokenize_sentences, (sentences[i : i + tokenization_batch_size] for i in range(0, len(sentences), tokenization_batch_size)),
+                                    (indices[i : i + tokenization_batch_size] for i in range(0, len(indices), tokenization_batch_size)),
                                     repeat(tokenizer), repeat(ip), repeat(src_lang), repeat(tgt_lang)))    
     file_name = f"{subset}.json"
     write_json(data, file_name)
