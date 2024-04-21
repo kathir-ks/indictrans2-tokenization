@@ -36,16 +36,16 @@ data_files = {
   "web_samples_v1_shard_8":{f"data/web_samples_v1/train-{str(i).zfill(5)}-of-00139.parquet" for i in range(100, 114)},
   "web_samples_v1_shard_9":{f"data/web_samples_v1/train-{str(i).zfill(5)}-of-00139.parquet" for i in range(114, 129)},
   "web_samples_v1_shard_10":{f"data/web_samples_v1/train-{str(i).zfill(5)}-of-00139.parquet" for i in range(129, 139)},
-  "web_samples_v2_shard_1":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-000118.parquet" for i in range(0, 12)},
-  "web_samples_v2_shard_2":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-000118.parquet" for i in range(12, 24)},
-  "web_samples_v2_shard_3":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-000118.parquet" for i in range(24, 36)},
-  "web_samples_v2_shard_4":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-000118.parquet" for i in range(36, 48)},
-  "web_samples_v2_shard_5":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-000118.parquet" for i in range(48, 60)},
-  "web_samples_v2_shard_6":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-000118.parquet" for i in range(60, 72)},
-  "web_samples_v2_shard_7":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-000118.parquet" for i in range(72, 84)},
-  "web_samples_v2_shard_8":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-000118.parquet" for i in range(84, 96)},
-  "web_samples_v2_shard_9":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-000118.parquet" for i in range(96, 108)},
-  "web_samples_v2_shard_10":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-000118.parquet" for i in range(108, 118)}
+  "web_samples_v2_shard_1":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-00118.parquet" for i in range(0, 12)},
+  "web_samples_v2_shard_2":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-00118.parquet" for i in range(12, 24)},
+  "web_samples_v2_shard_3":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-00118.parquet" for i in range(24, 36)},
+  "web_samples_v2_shard_4":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-00118.parquet" for i in range(36, 48)},
+  "web_samples_v2_shard_5":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-00118.parquet" for i in range(48, 60)},
+  "web_samples_v2_shard_6":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-00118.parquet" for i in range(60, 72)},
+  "web_samples_v2_shard_7":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-00118.parquet" for i in range(72, 84)},
+  "web_samples_v2_shard_8":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-00118.parquet" for i in range(84, 96)},
+  "web_samples_v2_shard_9":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-00118.parquet" for i in range(96, 108)},
+  "web_samples_v2_shard_10":{f"data/web_samples_v2/train-{str(i).zfill(5)}-of-00118.parquet" for i in range(108, 118)}
 }
 
 
