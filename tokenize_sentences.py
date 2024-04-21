@@ -20,7 +20,7 @@ data_files = {
                "data/openstax/train-00001-of-00002.parquet",
                "data/khanacademy/train-00000-of-00001.parquet", 
                "data/wikihow/train-00000-of-00002.parquet",
-               "data/wikihow/train-00000-of-00002.parquet"
+               "data/wikihow/train-00001-of-00002.parquet"
                },
   "stanford":{f"data/stanford/train-{str(i).zfill(5)}-of-00013.parquet" for i in range(0, 13)},
   "stories_shard_1":{f"data/stories/train-{str(i).zfill(5)}-of-00043.parquet" for i in range(0, 14)},
