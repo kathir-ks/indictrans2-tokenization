@@ -15,13 +15,18 @@ nltk.download('punkt')
 
 
 data_files = {
-   "auto_math_text":{f"data/auto_math_text/train-{str(i).zfill(5)}-of-00018.parquet" for i in range(0, 18)},
+   "auto_math_text_shard_1":{f"data/auto_math_text/train-{str(i).zfill(5)}-of-00018.parquet" for i in range(0, 6)},
+   "auto_math_text_shard_2":{f"data/auto_math_text/train-{str(i).zfill(5)}-of-00018.parquet" for i in range(6, 12)},
+   "auto_math_text_shard_3":{f"data/auto_math_text/train-{str(i).zfill(5)}-of-00018.parquet" for i in range(12, 18)},
    "combined":{"data/openstax/train-00000-of-00002.parquet",
                "data/openstax/train-00001-of-00002.parquet",
                "data/khanacademy/train-00000-of-00001.parquet", 
                "data/wikihow/train-00000-of-00002.parquet",
                "data/wikihow/train-00001-of-00002.parquet"
                },
+  "wikihow":{f"data/wikihow/train-{str(i).zfill(5)}-of-00002.parquet" for i in range(0, 2)},        
+  "openstax":{f"data/openstax/train-{str(i).zfill(5)}-of-00002.parquet" for i in range(0, 2)},        
+  "khanacademy":{f"data/khanacademy/train-00000-of-00001.parquet"},            
   "stanford":{f"data/stanford/train-{str(i).zfill(5)}-of-00013.parquet" for i in range(0, 13)},
   "stories_shard_1":{f"data/stories/train-{str(i).zfill(5)}-of-00043.parquet" for i in range(0, 14)},
   "stories_shard_2":{f"data/stories/train-{str(i).zfill(5)}-of-00043.parquet" for i in range(14, 28)},
