@@ -2,7 +2,7 @@
 single process execution
 '''
 
-
+import re
 import json
 from datasets import load_dataset
 import argparse
@@ -12,6 +12,7 @@ from concurrent.futures import ProcessPoolExecutor
 from itertools import repeat
 import nltk
 nltk.download('punkt')
+from unicodedata import normalize
 
 
 data_files = {
